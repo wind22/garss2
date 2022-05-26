@@ -35,9 +35,12 @@ def get_rss_info(feed_url, index, rss_info_list):
                 for entrie in feed_entries[0: feed_entries_length-1]:
                     title = entrie["title"]
                     link = entrie["link"]
-                    author = entrie['author']
+                    if entrie.has_key('author'):
+                        author = entrie['author']
+                    else:
+                        author = '未知'
                     date = time.strftime("%Y-%m-%d", entrie["published_parsed"])
-
+                    
                     title = title.replace("\n", "")
                     title = title.replace("\r", "")
                     author = author.replace('\n\r','')

@@ -35,15 +35,17 @@ def get_rss_info(feed_url, index, rss_info_list):
                 for entrie in feed_entries[0: feed_entries_length-1]:
                     title = entrie["title"]
                     link = entrie["link"]
+                    author = entrie['author']
                     date = time.strftime("%Y-%m-%d", entrie["published_parsed"])
 
                     title = title.replace("\n", "")
                     title = title.replace("\r", "")
-
+                    author = author.replace('\n\r','')
                     result["result"].append({
                         "title": title,
                         "link": link,
-                        "date": date
+                        "date": date,
+                        'author':author
                     })
                 request_success = True
             except Exception as e:
@@ -158,9 +160,10 @@ def replace_readme():
                     if (rss_info_atom["date"] == datetime.today().strftime("%Y-%m-%d")):
                         new_num = new_num + 1
                         if (new_num % 2) == 0:
-                            current_date_news_index[0] = current_date_news_index[0] + "<div style='line-height:3;' ><a href='" + rss_info_atom["link"] + "' " + 'style="line-height:2;text-decoration:none;display:block;color:#584D49;">' + "🌈 ‣ " + rss_info_atom["title"] + " | 第" + str(new_num) +"篇" + "</a></div>"
+                            current_date_news_index[0] = current_date_news_index[0] + "<div style='line-height:3;' ><a href='" + rss_info_atom["link"] + "' " + 'style="line-height:2;text-decoration:none;display:block;color:#584D49;">' + "🌈 ‣ " + 
+                            ["title"] + " |author:" + rss_info_atom["author"] + " | 第" + str(new_num) +"篇" + "</a></div>"
                         else:
-                            current_date_news_index[0] = current_date_news_index[0] + "<div style='line-height:3;background-color:#FAF6EA;' ><a href='" + rss_info_atom["link"] + "' " + 'style="line-height:2;text-decoration:none;display:block;color:#584D49;">' + "🌈 ‣ " + rss_info_atom["title"] + " | 第" + str(new_num) +"篇" + "</a></div>"
+                            current_date_news_index[0] = current_date_news_index[0] + "<div style='line-height:3;background-color:#FAF6EA;' ><a href='" + rss_info_atom["link"] + "' " + 'style="line-height:2;text-decoration:none;display:block;color:#584D49;">' + "🌈 ‣ " + rss_info_atom["title"] + " |author:" + rss_info_atom["author"] + " | 第" + str(new_num) +"篇" + "</a></div>"
 
             except:
                 print("An exception occurred")

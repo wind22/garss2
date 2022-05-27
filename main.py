@@ -338,7 +338,7 @@ def main():
     reResult = re.findall(mail_re, readme_md[0])
 
     try:
-        send_mail(email_list, "嘎!RSS订阅", reResult)
+        send_mail(email_list, "嘎!RSS订阅", content)
     except Exception as e:
         print("==邮件设信息置错误===》》", e)
 

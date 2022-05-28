@@ -109,7 +109,7 @@ def get_mail_content(file_path):
     section_format_html = '<h1 id="{cate}">{cate}</h1>'
     rss_format_html = '''<h3 id="{rss_name}"><a href="{link}">{rss_name}</a></h3>'''
     section_sep = '<HR style="border:1 dashed #35cb1e" width="100%" color=#987cb9 SIZE=10>'
-    rss_seq = '<HR style="FILTER: progid:DXImageTransform.Microsoft.Shadow(color:#987cb9,direction:145,strength:15)" width="100%" color=#30a1b0 SIZE=5>'
+    rss_seq = '<HR style="FILTER: progid:DXImageTransform.Microsoft.Shadow(color:#987cb9,direction:145,strength:15)" width="100%" color=#0d78cf SIZE=5>'
     new_edit_readme_md = ["", "", ""]
     current_date_news_index = [""]
     rss_list_format = []

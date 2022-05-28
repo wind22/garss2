@@ -341,8 +341,12 @@ def main():
     email_list = get_email_list()
     
     try:
+<<<<<<< HEAD
         send_mail(email_list, "嘎!RSS订阅", content1)
         send_mail(email_list,"嘎!RSS订阅",content2)
+=======
+        send_mail(email_list, "嘎!RSS订阅", content)
+>>>>>>> 05c0b5b3326049d00817c2067ebe350d3b8dc144
     except Exception as e:
         print("==邮件设信息置错误===》》", e)
 

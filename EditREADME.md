@@ -21,8 +21,6 @@
 
 {{news}}
 
-<邮件内容区结束
-
 ## 已收集RSS列表
 
 | 编号 | 名称 | 描述 | RSS  |  最新内容 |
@@ -276,7 +274,7 @@
 | TG010 | 快乐星球 | 美女图片  | {{latest_content}}  |  [订阅地址](https://rsshub.v2fy.com/telegram/channel/botmzt) |
 | TG011 | Newlearnerの自留地 | 不定期推送 IT 相关资讯 | {{latest_content}}  |  [订阅地址](https://rsshub.v2fy.com/telegram/channel/NewlearnerChannel) |
 
-
+<邮件内容区结束
 
 ## 批量导入所有RSS订阅
 

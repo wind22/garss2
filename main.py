@@ -11,6 +11,7 @@ import json
 import shutil
 from urllib.parse import urlparse
 from multiprocessing import Pool,  Manager
+import json
 
 
 # test test
@@ -101,116 +102,119 @@ def send_mail(email, title, contents):
     # 发送邮件
     yag.send(email, title, contents)
 
-def replace_readme():
-    new_edit_readme_md = ["", ""]
+
+def get_mail_content(file_path):
+    section_format_text = '| <h3 id="{cate}">{cate}</h3> |  |  |  |'
+    rss_format_text = '|{rss_name} | {rss_description} | {latest_content} |  [订阅地址]({link}) |'
+    new_edit_readme_md = ["", "", ""]
     current_date_news_index = [""]
-
-
-    
-    # 读取EditREADME.md
-    print("replace_readme")
+    rss_list_format = []
+    rss_link = []
     new_num = 0
-    with open(os.path.join(os.getcwd(),"EditREADME.md"),'r') as load_f:
-        edit_readme_md = load_f.read();
-
-
-
-        new_edit_readme_md[0] = edit_readme_md
-        before_info_list =  re.findall(r'\{\{latest_content\}\}.*\[订阅地址\]\(.*\)' ,edit_readme_md);
+  
+    with open(file_path,'r') as load_f:
+        load_dic = json.load(load_f)
+        cur_cate = ''
+        for index, rss in enumerate(load_dic["rss_list"]):
+            rss_link.append(rss['link'])
+            if rss['cate'] != cur_cate:
+                rss_list_format.append(section_format_text.format(cate=rss['cate']))
+                rss_list_format.append(rss_format_text.format(
+                    cate=rss['cate']
+                    ,rss_name=rss['rss_name']
+                    ,rss_description = rss['rss_description']
+                    ,link = rss['link']
+                    ,latest_content = str(index) + 'latest_content'))
+                cur_cate = rss['cate']
+            else:
+                rss_list_format.append(rss_format_text.format(
+                    cate=rss['cate']
+                    ,rss_name=rss['rss_name']
+                    ,rss_description = rss['rss_description']
+                    ,link = rss['link']
+                    ,latest_content = str(index) + 'latest_content'))
+                
+                
+    with open(os.path.join(os.getcwd(),"EditREADME2.md"),'r') as load_f:
+        edit_readme_md = load_f.read()
+        new_edit_readme_md[0] = edit_readme_md + '\n'.join(rss_list_format) + '\n' + '<邮件格式2结束'
         # 填充统计RSS数量
-        new_edit_readme_md[0] = new_edit_readme_md[0].replace("{{rss_num}}", str(len(before_info_list)))
+        new_edit_readme_md[0] = new_edit_readme_md[0].replace("{{rss_num}}", str(len(rss_link)))
         # 填充统计时间
         ga_rss_datetime = datetime.fromtimestamp(int(time.time()),pytz.timezone('Asia/Shanghai')).strftime('%Y-%m-%d %H:%M:%S')
         new_edit_readme_md[0] = new_edit_readme_md[0].replace("{{ga_rss_datetime}}", str(ga_rss_datetime))
 
-        # 使用进程池进行数据获取，获得rss_info_list
-        before_info_list_len = len(before_info_list)
-        rss_info_list = Manager().list(range(before_info_list_len))
-        print('初始化完毕==》', rss_info_list)
+    # 使用进程池进行数据获取，获得rss_info_list
+    before_info_list_len = len(rss_link)
+    rss_info_list = Manager().list(range(before_info_list_len))
+    print('初始化完毕==》', rss_info_list)
+    
+    # 创建一个最多开启8进程的进程池
+    po = Pool(8)
 
+    for index, link in enumerate(rss_link):
+        # 获取link
+        po.apply_async(get_rss_info,(link, index, rss_info_list))
+
+
+    # 关闭进程池,不再接收新的任务,开始执行任务
+    po.close()
+
+    # 主进程等待所有子进程结束
+    po.join()
+    print("----结束----", rss_info_list)
+    
+    for index, link in enumerate(rss_link):
+        # 生成超链接
+        rss_info = rss_info_list[index]
+        latest_content = ""
+        parse_result = urlparse(link)
+        scheme_netloc_url = str(parse_result.scheme)+"://"+str(parse_result.netloc)
+        latest_content = "[暂无法通过爬虫获取信息, 点击进入源网站主页]("+ scheme_netloc_url +")"
+
+        # 加入到索引
+        try:
+            for rss_info_atom in rss_info:
+                if (rss_info_atom["date"] == datetime.today().strftime("%Y-%m-%d")):
+                    new_num = new_num + 1
+                    if (new_num % 2) == 0:
+                        current_date_news_index[0] = current_date_news_index[0] + "<div style='line-height:3;' ><a href='" + rss_info_atom["link"] + "' " + 'style="line-height:2;text-decoration:none;display:block;color:#584D49;">' + "🌈 ‣ " + rss_info_atom["title"] + " |author:" + rss_info_atom["author"] + "</a></div>"
+                    else:
+                        current_date_news_index[0] = current_date_news_index[0] + "<div style='line-height:3;background-color:#FAF6EA;' ><a href='" + rss_info_atom["link"] + "' " + 'style="line-height:2;text-decoration:none;display:block;color:#584D49;">' + "🌈 ‣ " + rss_info_atom["title"] + " |author:" + rss_info_atom["author"] + "</a></div>"
+
+        except:
+            print("An exception occurred")
         
 
-        # 创建一个最多开启8进程的进程池
-        po = Pool(8)
-
-        for index, before_info in enumerate(before_info_list):
-            # 获取link
-            link = re.findall(r'\[订阅地址\]\((.*)\)', before_info)[0]
-            po.apply_async(get_rss_info,(link, index, rss_info_list))
-
-
-        # 关闭进程池,不再接收新的任务,开始执行任务
-        po.close()
-
-        # 主进程等待所有子进程结束
-        po.join()
-        print("----结束----", rss_info_list)
-
-
-        for index, before_info in enumerate(before_info_list):
-            # 获取link
-            link = re.findall(r'\[订阅地址\]\((.*)\)', before_info)[0]
-            # 生成超链接
-            rss_info = rss_info_list[index]
-            latest_content = ""
-            parse_result = urlparse(link)
-            scheme_netloc_url = str(parse_result.scheme)+"://"+str(parse_result.netloc)
-            latest_content = "[暂无法通过爬虫获取信息, 点击进入源网站主页]("+ scheme_netloc_url +")"
-
-            # 加入到索引
-            try:
-                for rss_info_atom in rss_info:
-                    if (rss_info_atom["date"] == datetime.today().strftime("%Y-%m-%d")):
-                        new_num = new_num + 1
-                        if (new_num % 2) == 0:
-                            current_date_news_index[0] = current_date_news_index[0] + "<div style='line-height:3;' ><a href='" + rss_info_atom["link"] + "' " + 'style="line-height:2;text-decoration:none;display:block;color:#584D49;">' + "🌈 ‣ " + rss_info_atom["title"] + " |author:" + rss_info_atom["author"] + "</a></div>"
-                        else:
-                            current_date_news_index[0] = current_date_news_index[0] + "<div style='line-height:3;background-color:#FAF6EA;' ><a href='" + rss_info_atom["link"] + "' " + 'style="line-height:2;text-decoration:none;display:block;color:#584D49;">' + "🌈 ‣ " + rss_info_atom["title"] + " |author:" + rss_info_atom["author"] + "</a></div>"
-
-            except:
-                print("An exception occurred")
             
-
+        for i, rss in enumerate(rss_info):
+            if (rss["date"] == datetime.today().strftime("%Y-%m-%d")):
+                rss["title"] = rss["title"].replace("|", "\|")
+                rss["title"] = rss["title"].replace("[", "\[")
+                rss["title"] = rss["title"].replace("]", "\]")
+                if i == 0:
+                    latest_content = "[" + "‣ " + rss["title"] + ( " 🌈 " + rss["date"] if (rss["date"] == datetime.today().strftime("%Y-%m-%d")) else " \| " + rss["date"] ) +"](" + rss["link"] +")"
+                else:
+                    latest_content = latest_content + "<br/>[" + "‣ " +  rss["title"] + ( " 🌈 " + rss["date"] if (rss["date"] == datetime.today().strftime("%Y-%m-%d")) else " \| " + rss["date"] ) +"](" + rss["link"] +")"
                 
-            if(len(rss_info) > 0):
-                rss_info[0]["title"] = rss_info[0]["title"].replace("|", "\|")
-                rss_info[0]["title"] = rss_info[0]["title"].replace("[", "\[")
-                rss_info[0]["title"] = rss_info[0]["title"].replace("]", "\]")
 
-                latest_content = "[" + "‣ " + rss_info[0]["title"] + ( " 🌈 " + rss_info[0]["date"] if (rss_info[0]["date"] == datetime.today().strftime("%Y-%m-%d")) else " \| " + rss_info[0]["date"] ) +"](" + rss_info[0]["link"] +")"  
-
-            if(len(rss_info) > 1):
-                rss_info[1]["title"] = rss_info[1]["title"].replace("|", "\|")
-                rss_info[1]["title"] = rss_info[1]["title"].replace("[", "\[")
-                rss_info[1]["title"] = rss_info[1]["title"].replace("]", "\]")
-
-                latest_content = latest_content + "<br/>[" + "‣ " +  rss_info[1]["title"] + ( " 🌈 " + rss_info[0]["date"] if (rss_info[0]["date"] == datetime.today().strftime("%Y-%m-%d")) else " \| " + rss_info[0]["date"] ) +"](" + rss_info[1]["link"] +")"
-
-            # 生成after_info
-            after_info = before_info.replace("{{latest_content}}", latest_content)
-            print("====latest_content==>", latest_content)
-            # 替换edit_readme_md中的内容
-            new_edit_readme_md[0] = new_edit_readme_md[0].replace(before_info, after_info)
-    
-    # 替换EditREADME中的索引
+        # 生成after_info
+        print(new_edit_readme_md[0])
+        new_edit_readme_md[0] = new_edit_readme_md[0].replace(str(index) + "latest_content", latest_content)
+        print("====latest_content==>", latest_content)
+        
+        
+     # 替换EditREADME中的索引
     new_edit_readme_md[0] = new_edit_readme_md[0].replace("{{news}}", current_date_news_index[0])
     # 替换EditREADME中的新文章数量索引
     new_edit_readme_md[0] = new_edit_readme_md[0].replace("{{new_num}}", str(new_num))
-    # 添加CDN
-    new_edit_readme_md[0] = new_edit_readme_md[0].replace("./_media", "https://cdn.jsdelivr.net/gh/zhaoolee/garss/_media")
         
-    # 将新内容
-    with open(os.path.join(os.getcwd(),"README.md"),'w') as load_f:
-        load_f.write(new_edit_readme_md[0])
-    
-
-    mail_re = r'邮件内容区开始>([.\S\s]*)<邮件内容区结束'
-    reResult = re.findall(mail_re, new_edit_readme_md[0])
-    new_edit_readme_md[1] = reResult
-
-    
+    mail_re1 = r'邮件格式1开始>([.\S\s]*)<邮件格式1结束'
+    mail_re2 = r'邮件格式2开始>([.\S\s]*)<邮件格式2结束'
+    new_edit_readme_md[1] = re.findall(mail_re1, new_edit_readme_md[0])
+    new_edit_readme_md[2] = re.findall(mail_re2, new_edit_readme_md[0])
+        
     return new_edit_readme_md
-
 # 将README.md复制到docs中
 
 def cp_readme_md_to_docs():
@@ -327,18 +331,22 @@ def create_opml():
 
 
 def main():
+    rss_source_path = os.path.join(os.getcwd(),"rss_source.json")
     create_opml()
-    readme_md = replace_readme()
-    content = markdown.markdown(readme_md[0], extensions=['tables', 'fenced_code'])
+    readme_md = get_mail_content(rss_source_path)
+    
+    with open(os.path.join(os.getcwd(),"README2.md"),'w') as load_f:
+        load_f.write(readme_md[0])
+        
+    content1 = markdown.markdown(readme_md[1][0], extensions=['tables', 'fenced_code'])
+    content2 = markdown.markdown(readme_md[2][0], extensions=['tables', 'fenced_code'])
     cp_readme_md_to_docs()
     cp_media_to_docs()
     email_list = get_email_list()
-
-    mail_re = r'邮件内容区开始>([.\S\s]*)<邮件内容区结束'
-    reResult = re.findall(mail_re, readme_md[0])
-
+    
     try:
-        send_mail(email_list, "嘎!RSS订阅", content)
+        send_mail(email_list, "嘎!RSS订阅", content1)
+        send_mail(email_list,"嘎!RSS订阅",content2)
     except Exception as e:
         print("==邮件设信息置错误===》》", e)
 

@@ -108,7 +108,8 @@ def get_mail_content(file_path):
     rss_format_text = '|{rss_name} | {rss_description} | {latest_content} |  [订阅地址]({link}) |'
     section_format_html = '<h1 id="{cate}">{cate}</h1>'
     rss_format_html = '''<h3 id="{rss_name}"><a href="{link}">{rss_name}</a></h3>'''
-    section_sep = '<HR style="border:1 dashed #35cb1e" width="80%" color=#987cb9 SIZE=10>'
+    section_sep = '<HR style="border:1 dashed #35cb1e" width="100%" color=#987cb9 SIZE=10>'
+    rss_seq = '<HR style="FILTER: progid:DXImageTransform.Microsoft.Shadow(color:#987cb9,direction:145,strength:15)" width="100%" color=#30a1b0 SIZE=5>'
     new_edit_readme_md = ["", "", ""]
     current_date_news_index = [""]
     rss_list_format = []
@@ -204,10 +205,12 @@ def get_mail_content(file_path):
                         current_date_news_index[0] = current_date_news_index[0] + rss_format_list[index]
                         flag = 0
                     if (new_num % 2) == 0:
-                        current_date_news_index[0] = current_date_news_index[0] + "<div style='line-height:3;' ><a href='" + rss_info_atom["link"] + "' " + 'style="line-height:2;text-decoration:none;display:block;color:#584D49;">' + "🌈 ‣ " + rss_info_atom["title"] + " |author:" + rss_info_atom["author"] + "</a></div>"
+                        current_date_news_index[0] = current_date_news_index[0] + "<div style='line-height:3;' ><a href='" + rss_info_atom["link"] + "' " + 'style="line-height:2;text-decoration:none;display:block;color:#584D49;">' + "🌈 ‣ " + rss_info_atom["title"] + "</a></div>"
                     else:
-                        current_date_news_index[0] = current_date_news_index[0] + "<div style='line-height:3;background-color:#FAF6EA;' ><a href='" + rss_info_atom["link"] + "' " + 'style="line-height:2;text-decoration:none;display:block;color:#584D49;">' + "🌈 ‣ " + rss_info_atom["title"] + " |author:" + rss_info_atom["author"] + "</a></div>"
+                        current_date_news_index[0] = current_date_news_index[0] + "<div style='line-height:3;background-color:#FAF6EA;' ><a href='" + rss_info_atom["link"] + "' " + 'style="line-height:2;text-decoration:none;display:block;color:#584D49;">' + "🌈 ‣ " + rss_info_atom["title"] + "</a></div>"
                     print(current_date_news_index[0])
+            if flag == 0:
+                current_date_news_index[0] += rss_seq
 
         except:
             print("An exception occurred")

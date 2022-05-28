@@ -1,0 +1,35 @@
+{
+    "rss_list": [
+        {
+            "cate":"软件工具",
+            "rss_name": "不死鸟",
+            "rss_description":"不死鸟:专注分享优质资源",
+            "link":"https://iao.su/feed"
+        },
+        {
+            "cate":"软件工具",
+            "rss_name": "精品MAC应用分享",
+            "rss_description":"精品MAC应用分享,每天分享大量mac软件,为您提供优质的mac软件,免费软件下载服务",
+            "link":"https://xclient.info/feed"
+        },
+        {
+            "cate":"投资",
+            "rss_name": "雪球",
+            "rss_description":"聪明的投资者都在这里,雪球每日精华",
+            "link":"https://xueqiu.com/hots/topic/rss"
+        },
+        {
+            "cate":"投资",
+            "rss_name": "孟岩-公众号",
+            "rss_description":"有知有行创始人",
+            "link":"https://github.com/hellodword/wechat-feeds/raw/feeds/MzIzNTQ4ODg4OA==.xml"
+        },
+        {
+            "cate":"数据科学",
+            "rss_name": "机器学习算法与自然语言处理",
+            "rss_description":"机器学习、深度学习、数据挖掘等人工智能领域的技术实战干货文章，这里都有！分享从业经验是我们的不变的准则……",
+            "link":"https://github.com/hellodword/wechat-feeds/raw/feeds/MzI4MDYzNzg4Mw==.xml"
+        }
+    ]
+}
+

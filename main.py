@@ -338,7 +338,7 @@ def main():
     with open(os.path.join(os.getcwd(),"README.md"),'w') as load_f:
         load_f.write(readme_md[0])
         
-    content1 = markdown.markdown(readme_md[1][0], extensions=['tables', 'fenced_code'])
+    content1 = readme_md[1][0]
     content2 = markdown.markdown(readme_md[2][0], extensions=['tables', 'fenced_code'])
     cp_readme_md_to_docs()
     cp_media_to_docs()

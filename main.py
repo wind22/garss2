@@ -329,13 +329,13 @@ def create_opml():
         
     # print(result)
 
-# test test
+
 def main():
     rss_source_path = os.path.join(os.getcwd(),"rss_source.json")
     create_opml()
     readme_md = get_mail_content(rss_source_path)
     
-    with open(os.path.join(os.getcwd(),"README2.md"),'w') as load_f:
+    with open(os.path.join(os.getcwd(),"README.md"),'w') as load_f:
         load_f.write(readme_md[0])
         
     content1 = markdown.markdown(readme_md[1][0], extensions=['tables', 'fenced_code'])

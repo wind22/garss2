@@ -108,6 +108,7 @@ def get_mail_content(file_path):
     rss_format_text = '|{rss_name} | {rss_description} | {latest_content} |  [订阅地址]({link}) |'
     section_format_html = '<h1 id="{cate}">{cate}</h1>'
     rss_format_html = '''<h3 id="{rss_name}"><a href="{link}">{rss_name}</a></h3>'''
+    section_sep = '<HR style="border:1 dashed #35cb1e" width="80%" color=#987cb9 SIZE=10>'
     new_edit_readme_md = ["", "", ""]
     current_date_news_index = [""]
     rss_list_format = []
@@ -116,6 +117,7 @@ def get_mail_content(file_path):
     rss_format_list = []
     rss_cate_list = []
     new_num = 0
+    
   
     with open(file_path,'r') as load_f:
         load_dic = json.load(load_f)
@@ -194,6 +196,7 @@ def get_mail_content(file_path):
                 if (rss_info_atom["date"] == datetime.today().strftime("%Y-%m-%d")):
                     new_num = new_num + 1
                     if cur_cate != rss_cate_list[index] and flag == 1:
+                        current_date_news_index[0] += section_sep
                         current_date_news_index[0] = current_date_news_index[0] + section_format_list[index] + rss_format_list[index]
                         cur_cate = rss_cate_list[index]
                         flag = 0

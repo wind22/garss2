@@ -14,28 +14,40 @@
         },
         {
             "cate":"软件工具",
-            "rss_name": "精品MAC应用分享",
-            "rss_description":"精品MAC应用分享,每天分享大量mac软件,为您提供优质的mac软件,免费软件下载服务",
-            "link":"https://xclient.info/feed"
-        },
-        {
-            "cate":"投资",
             "rss_name": "少数派",
             "rss_description":"少数派致力于更好地运用数字产品或科学方法，帮助用户提升工作效率和生活品质",
             "link":"https://sspai.com/feed"
         },
         {
-            "cate":"数据科学",
-            "rss_name": "机器学习算法与自然语言处理",
-            "rss_description":"机器学习、深度学习、数据挖掘等人工智能领域的技术实战干货文章，这里都有！分享从业经验是我们的不变的准则……",
-            "link":"https://github.com/hellodword/wechat-feeds/raw/feeds/MzI4MDYzNzg4Mw==.xml"
+            "cate":"投资",
+            "rss_name": "雪球",
+            "rss_description":"聪明的投资者都在这里,雪球每日精华",
+            "link":"https://xueqiu.com/hots/topic/rss"
         },
         {
             "cate":"产品",
             "rss_name": "人人都是产品经理",
             "rss_description":"人人都是产品经理",
-            "link":"http://iamsujie.com/feed/"
+            "link":"http://www.woshipm.com/feed"
+        },
+        {
+            "cate":"互联网资讯",
+            "rss_name": "虎嗅",
+            "rss_description":"虎嗅网新闻",
+            "link":"https://www.huxiu.com/rss/0.xml"
+        },
+        {
+            "cate":"互联网资讯",
+            "rss_name": "36kr",
+            "rss_description":"36氪",
+            "link":"https://www.36kr.com/feed"
+        },
+        {
+            "cate":"互联网资讯",
+            "rss_name": "极客公园",
+            "rss_description":"极客公园",
+            "link":"https://www.geekpark.net/rss"
         }
+
     ]
 }
-

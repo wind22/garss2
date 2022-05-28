@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # Github Actions Rss (garss, 嘎RSS! 已收集6个RSS源, 生成时间: 2022-05-28 15:21:38)
+=======
+# Github Actions Rss (garss, 嘎RSS! 已收集6个RSS源, 生成时间: 2022-05-28 15:16:58)
+>>>>>>> e0f99d1aa22365825b057f43257f27029abe29d7
 
 信息茧房是指人们关注的信息领域会习惯性地被自己的兴趣所引导，从而将自己的生活桎梏于像蚕茧一般的“茧房”中的现象。
 
@@ -19,7 +23,11 @@
 2. 利用Github Actions, 搜集全部RSS的头版头条新闻标题和超链接, 并自动更新到首页,当天最新发布的文章会出现🌈 标志
 
 邮件格式1开始>
+<<<<<<< HEAD
 <h2>新蒸熟2个小蛋糕🍰(文章) 生产时间 2022-05-28 15:21:38 保质期24小时</h2>
+=======
+<h2>新蒸熟2个小蛋糕🍰(文章) 生产时间 2022-05-28 15:16:58 保质期24小时</h2>
+>>>>>>> e0f99d1aa22365825b057f43257f27029abe29d7
 
 <HR style="border:1 dashed #35cb1e" width="100%" color=#987cb9 SIZE=10><h1 id="投资">投资</h1><h3 id="少数派"><a href="https://sspai.com/feed">少数派</a></h3><div style='line-height:3;background-color:#FAF6EA;' ><a href='https://sspai.com/post/73304' style="line-height:2;text-decoration:none;display:block;color:#584D49;">🌈 ‣ TA 有好物 | 618 将至，为你挑选 5 款多场景风扇</a></div><div style='line-height:3;' ><a href='https://sspai.com/post/73472' style="line-height:2;text-decoration:none;display:block;color:#584D49;">🌈 ‣ Apple 与「聚光灯」下的开发者们：App Store 交出阶段性成绩单</a></div><HR style="FILTER: progid:DXImageTransform.Microsoft.Shadow(color:#987cb9,direction:145,strength:15)" width="100%" color=#0d78cf SIZE=5>
 
@@ -28,7 +36,11 @@
 
 邮件格式2开始>
 ## 已收集RSS列表
+<<<<<<< HEAD
 <h2>新蒸熟2个小蛋糕🍰(文章) 生产时间 2022-05-28 15:21:38 保质期24小时</h2>
+=======
+<h2>新蒸熟2个小蛋糕🍰(文章) 生产时间 2022-05-28 15:16:58 保质期24小时</h2>
+>>>>>>> e0f99d1aa22365825b057f43257f27029abe29d7
 
 | 名称 | 描述 | RSS  |  最新内容 |
 | --- | --- | --- |  --- |

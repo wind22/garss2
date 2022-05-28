@@ -41,3 +41,6 @@
 | <h3 id="数据科学">数据科学</h3> |  |  |  |
 |机器学习算法与自然语言处理 | 机器学习、深度学习、数据挖掘等人工智能领域的技术实战干货文章，这里都有！分享从业经验是我们的不变的准则…… | [暂无法通过爬虫获取信息, 点击进入源网站主页](https://github.com) |  [订阅地址](https://github.com/hellodword/wechat-feeds/raw/feeds/MzI4MDYzNzg4Mw==.xml) |
 <邮件格式2结束
+
+
+

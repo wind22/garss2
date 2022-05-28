@@ -106,10 +106,15 @@ def send_mail(email, title, contents):
 def get_mail_content(file_path):
     section_format_text = '| <h3 id="{cate}">{cate}</h3> |  |  |  |'
     rss_format_text = '|{rss_name} | {rss_description} | {latest_content} |  [订阅地址]({link}) |'
+    section_format_html = '<h1 id="{cate}">{cate}</h1>'
+    rss_format_html = '''<h3 id="{rss_name}"><a href="{link}">{rss_name}</a></h3>'''
     new_edit_readme_md = ["", "", ""]
     current_date_news_index = [""]
     rss_list_format = []
     rss_link = []
+    section_format_list = []
+    rss_format_list = []
+    rss_cate_list = []
     new_num = 0
   
     with open(file_path,'r') as load_f:
@@ -117,6 +122,9 @@ def get_mail_content(file_path):
         cur_cate = ''
         for index, rss in enumerate(load_dic["rss_list"]):
             rss_link.append(rss['link'])
+            section_format_list.append(section_format_html.format(cate=rss['cate']))
+            rss_format_list.append(rss_format_html.format(link=rss['link'],rss_name=rss['rss_name']))
+            rss_cate_list.append(rss['cate'])
             if rss['cate'] != cur_cate:
                 rss_list_format.append(section_format_text.format(cate=rss['cate']))
                 rss_list_format.append(rss_format_text.format(
@@ -164,6 +172,8 @@ def get_mail_content(file_path):
     po.join()
     print("----结束----", rss_info_list)
     
+    
+    cur_cate = ''
     for index, link in enumerate(rss_link):
         # 生成超链接
         rss_info = rss_info_list[index]
@@ -174,13 +184,27 @@ def get_mail_content(file_path):
 
         # 加入到索引
         try:
+            # if len(rss_info) > 0 and cur_cate != rss_cate_list[index]:
+            #     current_date_news_index[0] = current_date_news_index[0] + section_format_list[index] + rss_format_list[index]
+            #     cur_cate = rss_cate_list[index]
+            # elif len(rss_info) > 0:
+            #     current_date_news_index[0] = current_date_news_index[0] + rss_format_list[index]
+            flag = 1
             for rss_info_atom in rss_info:
                 if (rss_info_atom["date"] == datetime.today().strftime("%Y-%m-%d")):
                     new_num = new_num + 1
+                    if cur_cate != rss_cate_list[index] and flag == 1:
+                        current_date_news_index[0] = current_date_news_index[0] + section_format_list[index] + rss_format_list[index]
+                        cur_cate = rss_cate_list[index]
+                        flag = 0
+                    elif flag == 1:
+                        current_date_news_index[0] = current_date_news_index[0] + rss_format_list[index]
+                        flag = 0
                     if (new_num % 2) == 0:
                         current_date_news_index[0] = current_date_news_index[0] + "<div style='line-height:3;' ><a href='" + rss_info_atom["link"] + "' " + 'style="line-height:2;text-decoration:none;display:block;color:#584D49;">' + "🌈 ‣ " + rss_info_atom["title"] + " |author:" + rss_info_atom["author"] + "</a></div>"
                     else:
                         current_date_news_index[0] = current_date_news_index[0] + "<div style='line-height:3;background-color:#FAF6EA;' ><a href='" + rss_info_atom["link"] + "' " + 'style="line-height:2;text-decoration:none;display:block;color:#584D49;">' + "🌈 ‣ " + rss_info_atom["title"] + " |author:" + rss_info_atom["author"] + "</a></div>"
+                    print(current_date_news_index[0])
 
         except:
             print("An exception occurred")
@@ -346,7 +370,7 @@ def main():
     
     try:
         send_mail(email_list, "嘎!RSS订阅", content1)
-        send_mail(email_list,"嘎!RSS订阅",content2)
+        # send_mail(email_list,"嘎!RSS订阅",content2)
     except Exception as e:
         print("==邮件设信息置错误===》》", e)
 

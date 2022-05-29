@@ -1,22 +1,10 @@
 {
     "rss_list": [
         {
-            "cate":"软件工具",
-            "rss_name": "不死鸟",
-            "rss_description":"不死鸟:专注分享优质资源",
-            "link":"https://iao.su/feed"
-        },
-        {
-            "cate":"软件工具",
-            "rss_name": "精品MAC应用分享",
-            "rss_description":"精品MAC应用分享,每天分享大量mac软件,为您提供优质的mac软件,免费软件下载服务",
-            "link":"https://xclient.info/feed"
-        },
-        {
-            "cate":"软件工具",
-            "rss_name": "少数派",
-            "rss_description":"少数派致力于更好地运用数字产品或科学方法，帮助用户提升工作效率和生活品质",
-            "link":"https://sspai.com/feed"
+            "cate":"个人博客",
+            "rss_name": "Juicing Today",
+            "rss_description":"一个以极高的「信息筛选标准」策展优质内容的阅读空间站",
+            "link":"https://juicing.today/feed.xml"
         },
         {
             "cate":"投资",
@@ -47,7 +35,30 @@
             "rss_name": "极客公园",
             "rss_description":"极客公园",
             "link":"https://www.geekpark.net/rss"
+        },
+        {
+            "cate":"软件工具",
+            "rss_name": "不死鸟",
+            "rss_description":"不死鸟:专注分享优质资源",
+            "link":"https://iao.su/feed"
+        },
+        {
+            "cate":"软件工具",
+            "rss_name": "精品MAC应用分享",
+            "rss_description":"精品MAC应用分享,每天分享大量mac软件,为您提供优质的mac软件,免费软件下载服务",
+            "link":"https://xclient.info/feed"
+        },
+        {
+            "cate":"软件工具",
+            "rss_name": "少数派",
+            "rss_description":"少数派致力于更好地运用数字产品或科学方法，帮助用户提升工作效率和生活品质",
+            "link":"https://sspai.com/feed"
+        },
+        {
+            "cate":"软件工具",
+            "rss_name": "V2方圆",
+            "rss_description":"发掘稀缺资源 v2fy zhaoolee",
+            "link":"https://v2fy.com/feed/"
         }
-
     ]
 }

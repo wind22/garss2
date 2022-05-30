@@ -37,6 +37,12 @@
             "link":"https://www.geekpark.net/rss"
         },
         {
+            "cate":"互联网资讯",
+            "rss_name": "知乎早报",
+            "rss_description":"每期囊括最近全站最新最热的优质讨论内容，并进行深入探讨，为知友们提供可信赖的优质解答，满足你的好奇心",
+            "link":"https://rss.lilydjwg.me/zhihuzhuanlan/c_1085975047386050560"
+        },
+        {
             "cate":"软件工具",
             "rss_name": "不死鸟",
             "rss_description":"不死鸟:专注分享优质资源",

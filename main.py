@@ -3,7 +3,7 @@ import time
 import os
 import re
 import pytz
-from datetime import datetime
+import datetime
 import yagmail
 import requests
 import markdown
@@ -11,8 +11,7 @@ import json
 import shutil
 from urllib.parse import urlparse
 from multiprocessing import Pool,  Manager
-import json
-
+import xml.etree.ElementTree as ET
 
 
 def get_rss_info(feed_url, index, rss_info_list):
@@ -118,7 +117,10 @@ def get_mail_content(file_path):
     rss_format_list = []
     rss_cate_list = []
     new_num = 0
-    
+    today = datetime.date.today()
+    yesterday = today - datetime.timedelta(days=1)
+    today = today.strftime("%Y-%m-%d")
+    yesterday = yesterday.strftime("%Y-%m-%d")
   
     with open(file_path,'r') as load_f:
         load_dic = json.load(load_f)
@@ -152,7 +154,7 @@ def get_mail_content(file_path):
         # 填充统计RSS数量
         new_edit_readme_md[0] = new_edit_readme_md[0].replace("{{rss_num}}", str(len(rss_link)))
         # 填充统计时间
-        ga_rss_datetime = datetime.fromtimestamp(int(time.time()),pytz.timezone('Asia/Shanghai')).strftime('%Y-%m-%d %H:%M:%S')
+        ga_rss_datetime = datetime.datetime.fromtimestamp(int(time.time()),pytz.timezone('Asia/Shanghai')).strftime('%Y-%m-%d %H:%M:%S')
         new_edit_readme_md[0] = new_edit_readme_md[0].replace("{{ga_rss_datetime}}", str(ga_rss_datetime))
 
     # 使用进程池进行数据获取，获得rss_info_list
@@ -194,7 +196,7 @@ def get_mail_content(file_path):
             #     current_date_news_index[0] = current_date_news_index[0] + rss_format_list[index]
             flag = 1
             for rss_info_atom in rss_info:
-                if (rss_info_atom["date"] == datetime.today().strftime("%Y-%m-%d")):
+                if (rss_info_atom["date"] in [today,yesterday]):
                     new_num = new_num + 1
                     if cur_cate != rss_cate_list[index] and flag == 1:
                         current_date_news_index[0] += section_sep
@@ -218,14 +220,14 @@ def get_mail_content(file_path):
 
             
         for i, rss in enumerate(rss_info):
-            if (rss["date"] == datetime.today().strftime("%Y-%m-%d")):
+            if (rss["date"] == datetime.datetime.today().strftime("%Y-%m-%d")):
                 rss["title"] = rss["title"].replace("|", "\|")
                 rss["title"] = rss["title"].replace("[", "\[")
                 rss["title"] = rss["title"].replace("]", "\]")
                 if i == 0:
-                    latest_content = "[" + "‣ " + rss["title"] + ( " 🌈 " + rss["date"] if (rss["date"] == datetime.today().strftime("%Y-%m-%d")) else " \| " + rss["date"] ) +"](" + rss["link"] +")"
+                    latest_content = "[" + "‣ " + rss["title"] + ( " 🌈 " + rss["date"] if (rss["date"] == datetime.datetime.today().strftime("%Y-%m-%d")) else " \| " + rss["date"] ) +"](" + rss["link"] +")"
                 else:
-                    latest_content = latest_content + "<br/>[" + "‣ " +  rss["title"] + ( " 🌈 " + rss["date"] if (rss["date"] == datetime.today().strftime("%Y-%m-%d")) else " \| " + rss["date"] ) +"](" + rss["link"] +")"
+                    latest_content = latest_content + "<br/>[" + "‣ " +  rss["title"] + ( " 🌈 " + rss["date"] if (rss["date"] == datetime.datetime.today().strftime("%Y-%m-%d")) else " \| " + rss["date"] ) +"](" + rss["link"] +")"
                 
 
         # 生成after_info
@@ -334,8 +336,8 @@ def create_opml():
     with open(os.path.join(os.getcwd(),"rss-template-v2.txt"),'r') as load_f:
         zhaoolee_github_garss_subscription_list_template = load_f.read();
         GMT_FORMAT = '%a, %d %b %Y %H:%M:%S GMT'
-        date_created = datetime.utcnow().strftime(GMT_FORMAT);
-        date_modified = datetime.utcnow().strftime(GMT_FORMAT);
+        date_created = datetime.datetime.utcnow().strftime(GMT_FORMAT);
+        date_modified = datetime.datetime.utcnow().strftime(GMT_FORMAT);
         zhaoolee_github_garss_subscription_list = zhaoolee_github_garss_subscription_list_template.format(result=result, date_created=date_created, date_modified=date_modified);
         # print(zhaoolee_github_garss_subscription_list);
 
@@ -359,6 +361,117 @@ def create_opml():
         
     # print(result)
 
+def get_rss_from_xml(rss_xml_dir_path):
+    rss_source = []
+    email_title = []
+    files = os.listdir(rss_xml_dir_path)
+    for file in files:
+        rss_list = []
+        if os.path.isfile(rss_xml_dir_path + os.sep +file):
+            tree = ET.parse(rss_xml_dir_path + os.sep +file)
+            root = tree.getroot()
+            email_title.append(root.find('head').find('title').text)
+            for cate in root.find('body'):
+                category = cate.attrib.get('title')
+                for rss in cate:
+                    rss.attrib['cate'] = category
+                    rss_list.append(rss.attrib)
+            rss_source.append(rss_list)
+    return rss_source,email_title
+
+def get_email_template(file_path,rss_num):
+    with open(file_path,'r') as load_f:
+        email_content = load_f.read()
+        # 填充统计RSS数量
+        email_content = email_content.replace("{{rss_num}}", str(rss_num))
+        # 填充统计时间
+        ga_rss_datetime = datetime.datetime.fromtimestamp(int(time.time()),pytz.timezone('Asia/Shanghai')).strftime('%Y-%m-%d %H:%M:%S')
+        email_content = email_content.replace("{{ga_rss_datetime}}", str(ga_rss_datetime))
+        return email_content
+    
+    
+def get_rss_info_mul_thread(rss_list):
+    # 使用进程池进行数据获取，获得rss_info_list
+    rss_info_list = Manager().list(range(len(rss_list))) 
+    # 创建一个最多开启8进程的进程池
+    po = Pool(8)
+    for index, rss in enumerate(rss_list):
+        # 获取link
+        po.apply_async(get_rss_info,(rss['xmlUrl'], index, rss_info_list))
+    # 关闭进程池,不再接收新的任务,开始执行任务
+    po.close()
+    # 主进程等待所有子进程结束
+    po.join()
+    return rss_info_list
+
+
+def get_email_content_from_xml(rss_source,email_title):
+    
+    section_format_html = '<h2 id="{cate}">{cate}</h2>'
+    rss_format_html = '''<h3 id="{rss_name}"><a href="{link}">{rss_name}</a></h3>'''
+    # section_sep = '<HR style="border:1 dashed #35cb1e" width="100%" color=#987cb9 SIZE=10>'
+    # rss_seq = '<HR style="FILTER: progid:DXImageTransform.Microsoft.Shadow(color:#987cb9,direction:145,strength:15)" width="100%" color=#0d78cf SIZE=5>'
+    today = datetime.date.today()
+    yesterday = today - datetime.timedelta(days=1)
+    today = today.strftime("%Y-%m-%d")
+    yesterday = yesterday.strftime("%Y-%m-%d")
+    
+    section_sep = ''
+    rss_seq = ''
+    email_content_list = []
+    
+    for num, rss_list in enumerate(rss_source):            
+        file_path = os.path.join(os.getcwd(),"email_template.md")       
+        email_template_content = get_email_template(file_path,len(rss_list))
+        rss_info_list = get_rss_info_mul_thread(rss_list)
+        email_content = ''
+        cur_cate = ''
+        new_num = 0
+        for index, rss in enumerate(rss_list):
+            # 生成超链接
+            rss_info = rss_info_list[index]
+            
+            # 加入到索引
+            try:
+                # if len(rss_info) > 0 and cur_cate != rss_cate_list[index]:
+                #     email_content = email_content + section_format_list[index] + rss_format_list[index]
+                #     cur_cate = rss_cate_list[index]
+                # elif len(rss_info) > 0:
+                #     email_content = email_content + rss_format_list[index]
+                flag = 1
+                for rss_info_atom in rss_info:
+                    if (rss_info_atom["date"] in [today, yesterday]):
+                        new_num = new_num + 1
+                        if cur_cate != rss['cate'] and flag == 1:
+                            email_content += section_sep
+                            email_content += section_format_html.format(cate = rss['cate']) + rss_format_html.format(rss_name=rss['title'],link=rss['htmlUrl'])
+                            cur_cate = rss['cate']
+                            flag = 0
+                        elif flag == 1:
+                            email_content += rss_format_html.format(rss_name=rss['title'],link=rss['htmlUrl'])
+                            flag = 0
+                        if (new_num % 2) == 0:
+                            email_content = email_content + "<div style='line-height:3;' ><a href='" + rss_info_atom["link"] + "' " + 'style="line-height:2;text-decoration:none;display:block;color:#584D49;">' + "🌈 ‣ " + rss_info_atom["title"] + "</a></div>"
+                        else:
+                            email_content = email_content + "<div style='line-height:3;background-color:#FAF6EA;' ><a href='" + rss_info_atom["link"] + "' " + 'style="line-height:2;text-decoration:none;display:block;color:#584D49;">' + "🌈 ‣ " + rss_info_atom["title"] + "</a></div>"
+                        print(email_content)
+                if flag == 0:
+                    email_content += rss_seq
+
+            except:
+                print("An exception occurred")
+        
+        
+        email_content = email_template_content.replace("{{news}}", email_content)
+        email_content = email_content.replace("{{new_num}}", str(new_num))
+        email_content = email_content.replace("{{email_title}}",email_title[num])
+            
+        mail_re = r'邮件格式开始>([.\S\s]*)<邮件格式结束'
+        email_content = re.findall(mail_re, email_content)[0]
+        email_content_list.append(email_content)
+        
+    return email_content_list    
+
 
 def main():
     rss_source_path = os.path.join(os.getcwd(),"rss_source.json")
@@ -381,5 +494,15 @@ def main():
         print("==邮件设信息置错误===》》", e)
 
 
+    rss_xml_dir_path = os.path.join(os.getcwd(),"rss_xml")
+    rss_source,email_title = get_rss_from_xml(rss_xml_dir_path)
+    email_content_list = get_email_content_from_xml(rss_source,email_title)
+
+    for email_content in email_content_list:
+        try:
+            send_mail(email_list, "嘎!RSS订阅", email_content)
+            # send_mail(email_list,"嘎!RSS订阅",content2)
+        except Exception as e:
+            print("==邮件设信息置错误===》》", e)
 if __name__ == "__main__":
     main()

@@ -39,7 +39,16 @@ def get_rss_info(feed_url, index, rss_info_list):
                         author = entrie['author']
                     else:
                         author = '未知'
-                    date = time.strftime("%Y-%m-%d", entrie["published_parsed"])
+                        
+                    date = ''
+                    if entrie.has_key('published_parsed'):
+                        date = time.strftime("%Y-%m-%d", entrie["published_parsed"])
+                    elif entrie.has_key('updated'):
+                        date = time.strftime("%Y-%m-%d", entrie["published_parsed"])
+                    elif entrie.has_key('lastBuildDate'):
+                        date = time.strftime("%Y-%m-%d", entrie["lastBuildDate"])
+                    
+    
                     
                     title = title.replace("\n", "")
                     title = title.replace("\r", "")

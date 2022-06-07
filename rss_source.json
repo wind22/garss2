@@ -65,6 +65,12 @@
             "rss_name": "V2方圆",
             "rss_description":"发掘稀缺资源 v2fy zhaoolee",
             "link":"https://v2fy.com/feed/"
+        },
+        {
+            "cate":"Web3资讯",
+            "rss_name": "cointelegraph",
+            "rss_description":"Web3资讯",
+            "link":"https://cointelegraphcn.com/rss"
         }
     ]
 }
